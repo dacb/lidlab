@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# get original data
+\rm -rf Select_Elutriation.txt
+wget http://genome-www.stanford.edu/SVD/htmls/PNAS/Datasets/Select_Elutriation.txt
+
+# run through R
+R --no-save < svd.R
