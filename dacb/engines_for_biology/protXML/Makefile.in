@@ -1,0 +1,45 @@
+# Makefile for MySQL storage engines
+# make sure the correct CXXFLAGS are used for 32/64 bit, .e.g -m32 / -m64
+# make sure that the correct shared library flags are available, e.g. -bundle for Mac, -share for linux
+
+SRCS = protXML.cc 
+OBJS = $(SRCS:.cc=.o)
+
+SOS  = ha_protXML_protein_group.so ha_protXML_protein.so ha_protXML_protein_parameter.so ha_protXML_indistinguishable_protein.so ha_protXML_peptide.so ha_protXML_peptide_parent_protein.so ha_protXML_indistinguishable_peptide.so ha_protXML_peptide_parameter.so ha_protXML_modification_info.so ha_protXML_mod_aminoacid_mass.so ha_protXML_indistinguishable_peptide_modification_info.so ha_protXML_indistinguishable_peptide_mod_aminoacid_mass.so
+SOOBJS = $(SOS:.so=.o)
+
+HDRS = $(SRCS:.cc=.h) $(SOS:.so=.h)
+
+CXX = @CC@
+CXXFLAGS = -g -O2 -fno-implicit-templates -fno-exceptions -fno-rtti -m@MYSQL_ARCHITECTURE@
+
+MYSQL_FLAGS = -DMYSQL_DYNAMIC_PLUGIN 
+MYSQL_INC = -I../sql -I../include -I../regex -I../util -I@OPENSSL_INCLUDES@ @EXPAT_CFLAGS@
+MYSQL_RPATH = @MYSQL_PLUGINS@
+
+all: $(SOS)
+
+.cc.o: $(HDRS)
+	$(CXX) $(CXXFLAGS) $(MYSQL_FLAGS) $(MYSQL_INC) -fno-common -fPIC -c $< -o $@
+
+%.so: %.o $(OBJS)
+	$(CXX) -g -Wl,-flat_namespace -Wl,-undefined -Wl,suppress @shared@ -m@MYSQL_ARCHITECTURE@ -o $@ $< $(OBJS) ../util/util.o @EXPAT_LIBS@
+
+install: $(SOS)
+	\cp $(SOS) $(MYSQL_RPATH)
+
+test: install
+# test or input_test
+# can subsitute @tmp@ for /tmp?
+	@echo "To test whether prot.xml installed properly, you can do this by:"
+	@echo "Placing a test file in the temp directory:"
+	@echo "%rm -rf /tmp/test.prot.xml"
+	@echo "%cp test.prot.xml /tmp/test.prot.xml"
+	@echo "Giving the file the proper permissions:"
+	@echo "%chmod oug+rwk /tmp/test.prot.xml"
+	@echo "then running the test sql file:"
+	@echo "%mysql /tmp/test.sql" 
+	@echo "Then clearing the temp file after the test is finished:"
+
+clean:
+	\rm -rf $(OBJS) $(SOS) $(SOOBJS)

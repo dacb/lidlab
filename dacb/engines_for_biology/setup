@@ -1,0 +1,85 @@
+#!/bin/bash
+
+if [ $# -ne 5 ] && [ $# -ne 6 ]; then
+	echo "usage: $0 <configured mysql source dir> <mysql plugin install dir> <32- or 64-bit mysql> <shared library linker flag> <openssl include path> [<binary install root>]"
+	echo "please see INSTALL for more information"
+	exit 1
+fi
+
+# make sure the configured source directory exists and is in fact a directory
+# further make sure it has all required subdirs for header files
+if [ -d $1 ]; then
+	if [ ! -d $1/sql ]; then
+		echo "$0: (ERROR) unable to find required directory $1/sql"
+		exit 1
+	fi
+	ln -sf $1/sql sql
+
+	if [ ! -d $1/regex ]; then
+		echo "$0: (ERROR) unable to find required directory $1/regex"
+		exit 1
+	fi
+	ln -sf $1/regex regex
+
+	if [ ! -d $1/include ]; then
+		echo "$0: (ERROR) unable to find required directory $1/include"
+		exit 1
+	fi
+	if [ $# -eq 4 ]; then
+		ln -sf $1/include include
+	else
+	# if you have a binary installation and a matching (version) source tree, you can
+	# get around the need for configuring the source by doing something like:
+		if [ ! -d $6/include ]; then
+			echo "$0: (ERROR) unable to find required directory $6/include"
+			exit 1
+		fi
+		# remove any existing include
+		\rm -rf include
+		mkdir include			# make new fake include directory
+		cp -R $1/include/* include	# copy base headers
+		cp -R $6/include/* include	# copy binary configuration headers
+	fi
+	# convert directory path into sed compatible path
+	mysql_src_dir_escaped=`echo $1 | sed 's/\//\\\\\//g'`
+else
+	echo "$0: (ERROR) the configured mysql source dir argument ($1) must be a directory"
+	exit 1
+fi
+
+if [ ! -d $2 ]; then
+	echo "$0: (ERROR) the mysql plugin install dir argument ($2) must be a directory"
+	exit 1
+fi
+# convert directory path into sed compatible path
+mysql_plugin_dir_escaped=`echo $2 | sed 's/\//\\\\\//g'`
+
+if [ "$3" -ne "32" ] && [ "$3" -ne "64" ]; then
+	echo "$0: (ERROR) bit argument must be 32 or64"
+	exit 1
+fi
+
+if [ ! -d $5 ]; then
+	echo "$0: (ERROR) the openssl include directory argument ($5) must be a directory"
+	exit 1
+fi
+openssl_include_dir_escaped=`echo $2 | sed 's/\//\\\\\//g'`
+
+sed -e "s/_CONFIGURED_MYSQL_SOURCE_PATH_/$mysql_src_dir_escaped/g" \
+	-e "s/_MYSQL_PLUGIN_DIR_/$mysql_plugin_dir_escaped/g" \
+	-e "s/_32_OR_64_/$3/g" \
+	-e "s/_SHARED_LINK_FLAG_/$4/g" \
+	-e "s/_OPENSSL_INCLUDE_PATH_/$openssl_include_dir_escaped/g" \
+	Makefile.in > template/Makefile
+
+cd fasta
+../template/configure fasta
+
+cd ../fastq
+../template/configure fastq
+
+cd ../blast_fmt6
+../template/configure blast_fmt6
+
+cd ../util
+../template/configure util

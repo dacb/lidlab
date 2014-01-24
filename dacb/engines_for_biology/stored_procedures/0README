@@ -1,0 +1,4 @@
+Some stored procedures that are useful in the context of E4B.  These are SQL and not compiled code.
+
+blast_best_matches.sql
+	Creates a table containing the best N BLAST hits from a blast_fmt_6 table where N is the number of best hits to limit.  Where two hits are equivalent in length and identity, they count as a single rank. I.e. best N of one may return more than one hit per row but they quality of the hits will be identical.

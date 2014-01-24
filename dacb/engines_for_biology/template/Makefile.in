@@ -1,0 +1,44 @@
+# Makefile for MySQL storage engines
+# make sure the correct CXXFLAGS are used for 32/64 bit, .e.g -m32 / -m64
+# make sure that the correct shared library flags are available, e.g. -bundle for Mac, -share for linux
+
+SRCS = ha_@engine@.cc ha_core.cc 
+HDRS = $(SRCS:.cc=.h)
+
+OBJS = $(SRCS:.cc=.o)
+SOS  = ha_@engine@.so
+
+CXX = @CC@ 
+CXXFLAGS = -g -O2 -fno-implicit-templates -fno-exceptions -fno-rtti -m@MYSQL_ARCHITECTURE@
+
+MYSQL_FLAGS = -DMYSQL_DYNAMIC_PLUGIN 
+MYSQL_INC = -I../sql -I../include -I../regex -I../util @OPENSSL_INCLUDES@
+MYSQL_RPATH = @MYSQL_PLUGINS@
+
+all: $(SOS)
+
+.cc.o: $(HDRS)
+	$(CXX) $(CXXFLAGS) $(MYSQL_FLAGS) $(MYSQL_INC) -fno-common -fPIC -c $< -o $@
+
+ha_@engine@.so: $(OBJS) ../util/transparent_file.o
+	$(CXX) -Wl,-flat_namespace -Wl,-undefined -Wl,suppress @shared@ -m@MYSQL_ARCHITECTURE@ -o $@ $(OBJS) ../util/transparent_file.o
+
+install: $(SOS)
+	\cp $(SOS) $(MYSQL_RPATH)
+
+test: install
+# test or input_test
+# can subsitute @tmp@ for /tmp?
+	@echo "To test whether @engine@ installed properly, you can do this by:"
+	@echo "Placing a test file in the temp directory:"
+	@echo "%rm -rf /tmp/test.@engine@"
+	@echo "%cp test.@engine@ /tmp/test.@engine@"
+	@echo "Giving the file the proper permissions:"
+	@echo "%chmod oug+rwk /tmp/test.@engine@"
+	@echo "then running the test sql file:"
+	@echo "%mysql /tmp/test.sql" 
+	@echo "Then clearing the temp file after the test is finished:"
+	@echo "%rm -rf /tmp/test.@engine@"
+
+clean:
+	\rm -rf $(OBJS) $(SOS)

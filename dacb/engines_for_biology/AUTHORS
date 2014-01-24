@@ -1,0 +1,31 @@
+Engines for Biology 
+
+EoB is a community developed and supported set of tools.  Please feel free
+to contribute and add your name to the lists below.
+
+Authors / contributors / sponsors:
+
+Name						Affiliation
+-----------------------------------------------	--------------------------
+David A. C. Beck (dacb@u.washington.edu)	eScience Institute
+						University of Washington
+
+Some code adapted or used from the following sources and authors:
+* MySQL CSV engine:
+Brian Aker
+* MySQL federated storage engine
+Brian Aker
+Patrick Galbraith
+* MySQL archive storage engine
+Brian Aker
+* Tangent skeleton_engine-0.7:
+Brian Aker
+Calvin Sun
+Brian Miezejewski
+* Autoconf:
+Yusuke Tsutsumi
+Craig Stimmel
+Eric Wu
+
+IN PARTICULAR, the Transparent_file class is derived entirely (w/ out modification)
+from Brian Aker's CSV engine for MySQL included in the MySQL source distribution.

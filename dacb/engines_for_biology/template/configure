@@ -1,0 +1,22 @@
+#!/bin/tcsh
+
+if ($#argv != 1) then
+	echo "usage: ./configure <engine>"
+	exit 1
+endif
+
+set engine = $argv[1]
+set ENGINE = `echo $engine | awk '{ print toupper($1) }'`
+
+set files = (ha_template.h ha_template.cc)
+
+echo "* reconfiguring files for engine $engine (in all caps $ENGINE)"
+
+foreach file ($files)
+	set renamed_file = `echo $file | sed "s/template/$engine/g"`
+	echo "$file -> $renamed_file"
+	sed "s/template/$engine/g" ../template/$file | sed "s/TEMPLATE/$ENGINE/g" > $renamed_file
+end
+
+echo "fixing up Makefile"
+sed "s/ha_template/ha_$engine/g" ../template/Makefile | sed "s/test.template/test.$engine/g" > Makefile

@@ -1,0 +1,99 @@
+= Adding an Engine to Engines For Biology (e4b) =
+This page is a tutorial on how to add additional engines to e4b. In addition, this page provides a guide for certain standardization of engines within e4b.
+
+In order to add a new engine to the build, GNU Autoconf is required. Autoconf is what e4b uses to generate the configure file, which configures the contained makefiles for any given environment. More information can be found at :
+http://www.gnu.org/software/autoconf/
+
+The process of adding an engine can be divided into the following steps:
+ * Adding Headers / Plugin Files to e4b folder
+ * Modifying the Makefile for the engine to be configure with autoconf
+ * Adding the engine both to the configure.ac, and the root Makefile
+
+== Adding Headers / Plugin Files ==
+To add a new engine, one should create a new folder for the engine within the engines_for_biology root folder (i.e. the same level as fasta, fastq, and blast_fmt6). This folder should contain everything pertaining to your engine. Specifically, the following:
+ * Makefile
+ * Headers
+ * Code
+ * Any files needed for testing
+
+== Modifying the Engine Makefile for autoconf compability ==
+
+Although the current Makefile for an engine may work on the machine it's being developed on, changes in the environment, such as the architecture, location of MySQL, and c compiler may cause the Makefile to fail. To address these problems, a configure file is provided that configures Makefiles to any given environment.
+
+The way that configure "configures" a Makefile is by using a template (generally called Makefile.in), and replacing placeholders in the template with actual variables about the environment, then sending the output to the Makefile. For example, suppose you needed the path to the MySQL plugins folder. In the current, non-configure Makefile, such an argument would probably look like:
+
+MYSQL_RPATH = /usr/lib/mysql/plugin/
+
+However the location of a MySQL plugin folder is not universal to all environments. Thus, one could replace the path with a placeholder:
+
+MYSQL_RPATH = @MYSQL_PLUGINS@
+
+Once configure is run, the configure will replace @MYSQL_PLUGINS@ with the path to the MySQL plugins folder, ensuring that regardless of the environment, the generated Makefile will still properly make.
+
+In this step, you will need to modify your Makefile into a Makefile.in template. The simplest way of doing this is by replacing the environmental constants in your Makefile with placeholders. Commonly used placeholders are listed below:
+ * @CC@ (the c compiler)
+ * @MYSQL_ARCHITECTURE@ (32 or 64, depending on whether the MySQL install is 32 or 64 bit, respectively)
+ * @MYSQL_PLUGINS@ (the location of the MySQL plugins folder)
+ * @shared@ (changed between -bundled for linux machines, and -shared for MACs)
+ * @OPENSSL_INCLUDES@ (the location of the OpenSSL include directory)
+
+In addition, the includes for MySQL are automatically copied into the include/ folder found in the root of e4b when the configure script is ran. The "sql" and "regex" folder found in the MySQL source are also automatically copied to the root directory of e4b. Thus, if you are using any includes from the MySQL install or the source, you can access them by adding ../include to your list of includes (assuming your makefile is inside of a subdirectory of e4b)
+
+If there are other environmental variables needed for your engine besides the ones above, please refer to the "adding to configure" section below.
+
+In summary, the simplest method to make your Makefile configure-ready is:
+ * Move Makefile to Makefile.in
+ * Replace any environmental variables with environmental placeholders
+
+== Adding the Engine to configure.ac ==
+
+Once you have your Makefile.in template, it's time to tell configure and the root Makefile that your Makefile exists, and needs to be configured. The configure script which is used to configure Makefiles uses a base autoconf file (configure.ac), from which the configure script is generated. To add your Makefile to the list of configured Makefiles, you need to add it to the configure.ac file.
+
+Adding the engine to configure.ac consists of inserting additional lines in the configure.ac. In most situations, this consists of simply adding your Makefile to the list of the inital AC_OUTPUT in configure.ac:
+
+AC_OUTPUT(Makefile protXML/Makefile 
+into:
+AC_OUTPUT(Makefile protXML/Makefile YOUR_ENGINE_FOLDERNAME/Makefile
+
+The AC_OUTPUT command tells configure to take your Makefile.in, do a search and replace of all the placeholders with their proper variables, and output it to a Makefile:
+
+./configure:Makefile.in -> Makefile
+
+However, the configure script still needs to be regenerated. This is the reason GNU autoconf needed to be installed. Simply calling autoconf will take the configure.ac file, and generate a configure script that does what is outlined in configure.ac:
+
+autoconf
+
+Autoconf automatically searches for a *.ac file, then generates a script as *. thus, configure.ac simply becomes configure.
+
+Now that configure configures your Makefile, its time to add it to the root Makefile. This ensures that your engine is compiled along with all the other engines in e4b. The root makefile recursively goes through all the folders designated in the "subdirs" variable, and runs each command in each of the folders. Thus, adding your engine simply consists of adding your folder to the list of subfolders:
+
+subdirs = fasta fastq blast_fmt6 protXML
+into:
+subdirs = fasta fastq blast_fmt6 protXML YOUR_ENGINE_FOLDER
+
+
+After this step, your engine is installed into e4b! Congratulations! You created your Makefile.in, which provides a template for configure to generate the Makefile, you added your engine to configure.ac and ran "autoconf", so configure now knows to configure your engine's Makefile as well, and you've added your engine to the root Makefile's subdir variable, so your engine's Makefile will be called along with the other engines when running make, make install, make clean, and so on.
+
+Some additional information is also outlined below, briefly discussing e4b's testing guidelines and information on how to add additional environmental variables to the configure script, if the current list does not suffice.
+
+== Module Testing Standards ==
+Due to MySQL's various iterations and implementation methods, it's best to have the user run the test themselves. Thus, all e4b engines tend to simply echo a brief description of how to test a particular engines. For example, fasta, one of the e4b engines, outputs the following:
+
+To test whether fasta installed properly, you can do this by:
+Placing a test file in the temp directory:
+%rm -rf /tmp/test.fasta
+%cp test.fasta /tmp/test.fasta
+Giving the file the proper permissions:
+%chmod oug+rwk /tmp/test.fasta
+then running the test sql file:
+%mysql /tmp/test.sql
+Then clearing the temp file after the test is finished:
+%rm -rf /tmp/test.fasta
+
+== Adding to Configure ==
+Sometimes configure does not provide all the environmental variables needed. If so, you will have to modify the configure script to find and set these variables for you. Recall from before that e4b uses GNU autoconf to generate the configure file. There are several ways to go about using autoconf to find the variable you want:
+ * Use Autoconf macros. autoconf provides several macros that do things from checking the existence of header or library files, to determining specific information about the compiler. The manual at http://www.gnu.org/software/autoconf/manual/html_node/index.html gives a in-depth look at all the macros that autoconf provides. It's highly reccomended to look through the manual before attempting the other alternatives.
+ * Find and use a .m4 file for autoconf. Often for checks of widely-used libraries or programs, Someone has written an extension for autoconf in the form of a .m4 file. One simply adds the .m4 file to the list of extensions in the configure.ac, pass the proper flags and call the function, and voila! The function provided in the m4 file usually provides the variables needed for that particular program or library.
+ * Code a check in the configure.ac. One can use BASH scripting to find variables and run checks for you. Once you have found the variable you're looking for, you can run AC_SUBST(VARIABLE_NAME,VARIABLE), which will tell configure to replace @VARIABLE_NAME@ wherever it sees it with VARIABLE
+
+Don't forget to run autoconf at the end to regenerate your configure file! This section was a very brief guide to writing scripts in autoconf. More information can be found at the autoconf documentation (highly recommended to consult this guide): http://www.gnu.org/software/autoconf/manual/html_node/index.html
