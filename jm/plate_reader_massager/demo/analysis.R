@@ -38,7 +38,7 @@ write.csv(d_massaged, "./output/demo_output.csv")
 
 # To run the function by loading a file from a relative path: 
 # (1) set the path below and uncomment the line
-#path.massager <- "../../../../../../../R_functions/2014_plate_reader_paste_massager.R"
+#path.massager <- "../../../../../../../R_functions/SoftMaxPro_endpoint_paste_massager.R"
 # (2) 
 # set the path to the CSV you want to run the function on.
   # In this case it is the path below.  Uncomment the line.  
