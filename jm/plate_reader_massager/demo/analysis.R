@@ -14,7 +14,7 @@ library(plyr)
   # advantage: uses the most current R file, and can be accessed from any computer.   
 
 #specify the web page for the R file.  NOTE:  want the "raw." part at the beginning!
-source.path <- "https://raw.githubusercontent.com/dacb/lidlab/master/jm/plate_reader_massager/2014_plate_reader_paste_massager.R" 
+source.path <- "https://raw.githubusercontent.com/dacb/lidlab/master/jm/plate_reader_massager/SoftMaxPro_endpoint_paste_massager.R" 
 
 # use getURL to get the R script
 eval(expr = parse( text = getURL(source.path, ssl.verifypeer=FALSE) )) 
