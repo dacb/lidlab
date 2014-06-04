@@ -1,6 +1,7 @@
 # This function takes a data frame and returns a data frame that is massaged into a nice format.
 # It is for a csv that results from pasting a the results of SoftMaxPro reading a plate on endpoint mode with any number of shakings before reading it. 
-# See the demo folder for a sample input and output file, as well as instructions for running it.  
+# See the demo folder for a sample input and output file, as well as instructions for running it. 
+# use package reshap2 for melt, not reshape.  
 
 plate_reader_paste_massager <- function (raw) {
   d <- raw
@@ -26,10 +27,10 @@ plate_reader_paste_massager <- function (raw) {
   d$rep <- 1:nrow(d) 
   d$rep <- ceiling(d$rep/8)  
   # now I have a replicate number in the column rep
-  d_melt <- melt(d, id.vars=c("row", "rep"), variable_name=c("col"))
+  d_melt <- melt(d, id.vars=c("row", "rep"), variable.name="col")
   d_melt$well <- paste(d_melt$row, d_melt$col, sep="")
   head(d_melt, 15)
-  d_melt <- subset(d_melt, select=-c(row, col))  # removes the columns named "row" and "col"
+  #d_melt <- subset(d_melt, select=-c(row, col))  # removes the columns named "row" and "col"
   #head(d_melt)
   return(d_melt)
 }
