@@ -17,6 +17,7 @@ library(RCurl) # necessary for getURL below
 library(stringr)  #used to get row and column names from well names: str_extract
 
 Arugments:
+
 Argument  | Requirements/Description
 ------------- | -------------
 df | The name of the data.frame that contains your columnar plate info.  Each well should be represented by one row, so there should be 96 rows. 
