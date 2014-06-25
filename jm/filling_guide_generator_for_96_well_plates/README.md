@@ -16,6 +16,13 @@ library(reshape2)  # for melt, cast
 library(RCurl) # necessary for getURL below
 library(stringr)  #used to get row and column names from well names: str_extract
 
+Arugments:
+Argument  | Requirements/Description
+------------- | -------------
+df | The name of the data.frame that contains your columnar plate info.  Each well should be represented by one row, so there should be 96 rows. 
+cols  | A list of the column names, as strings.  Example: c("uL.resin", "mL.culture")
+well.identifier  |  The name of the column that contains the well label of the format A1, B6, C12. 
+
 Warnings:
 * It will break if you give it a column name that doesn't exist
   * Error 140625: Error in structure(ordered, dim = ns) : 
