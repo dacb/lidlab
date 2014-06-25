@@ -18,5 +18,5 @@ library(stringr)  #used to get row and column names from well names: str_extract
 
 Warnings:
 * It will break if you give it a column name that doesn't exist
-** Error 140625: Error in structure(ordered, dim = ns) : 
+  * Error 140625: Error in structure(ordered, dim = ns) : 
   dims [product 96] do not match the length of object [0] 
