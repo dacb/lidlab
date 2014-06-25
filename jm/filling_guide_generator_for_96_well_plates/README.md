@@ -11,3 +11,12 @@ It gives a data.frame you can save to a csv, then do conditional highlighting on
 
 See the demo package for more detail.  
 
+Required packages:
+library(reshape2)  # for melt, cast
+library(RCurl) # necessary for getURL below
+library(stringr)  #used to get row and column names from well names: str_extract
+
+Warnings:
+* It will break if you give it a column name that doesn't exist
+** Error 140625: Error in structure(ordered, dim = ns) : 
+  dims [product 96] do not match the length of object [0] 
