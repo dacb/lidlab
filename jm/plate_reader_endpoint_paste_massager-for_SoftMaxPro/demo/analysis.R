@@ -52,6 +52,7 @@ source(path.massager, local=FALSE, echo=FALSE,chdir=FALSE, print.eval=FALSE)
 # (5) run the function on the data frame.  You could save it by d2 <- plate_reader_paste_massager(d)
 output <- plate_reader_paste_massager(d)   # or just print it to the screen with this command.
 output
+write.csv(output, "./output/demo_output--from_loacal_function_not_the_internet.csv")
 
 
 
