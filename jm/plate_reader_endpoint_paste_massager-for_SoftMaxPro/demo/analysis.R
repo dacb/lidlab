@@ -38,18 +38,20 @@ write.csv(d_massaged, "./output/demo_output.csv")
 
 # To run the function by loading a file from a relative path: 
 # (1) set the path below and uncomment the line
-#path.massager <- "../../../../../../../R_functions/SoftMaxPro_endpoint_paste_massager.R"
+getwd()
+path.massager <- "../SoftMaxPro_endpoint_paste_massager.R"
 # (2) 
 # set the path to the CSV you want to run the function on.
-  # In this case it is the path below.  Uncomment the line.  
-# path.csv <- "./raw_data/2014_05_14.csv"i
+#   In this case it is the path below.  Uncomment the line.  
+path.csv <- "./raw_data/2014_05_14.csv"
 # (3) read in the data in the csv  (uncomment line below)
-# d <- read.csv(path.csv)
-# d  # optional: print the raw CSV that hasn't been manipulated before. 
+d <- read.csv(path.csv)
+d  # optional: print the raw CSV that hasn't been manipulated before. 
 # (4) use the source command to load the function plate_reader_plate_massager (uncomment again)
-#source(path.massager, local=FALSE, echo=FALSE,chdir=FALSE, print.eval=FALSE)
+source(path.massager, local=FALSE, echo=FALSE,chdir=FALSE, print.eval=FALSE)
 # (5) run the function on the data frame.  You could save it by d2 <- plate_reader_paste_massager(d)
-# plate_reader_paste_massager(d)   # or just print it to the screen with this command. 
+output <- plate_reader_paste_massager(d)   # or just print it to the screen with this command.
+output
 
 
 
