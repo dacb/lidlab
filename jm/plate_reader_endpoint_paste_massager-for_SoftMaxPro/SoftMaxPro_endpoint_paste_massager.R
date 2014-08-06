@@ -42,6 +42,7 @@ plate_reader_paste_massager <- function (raw) {
   # now I have a replicate number in the column rep
   d_melt <- melt(d, id.vars=c("row", "rep"), variable_name="col") 
       # in the old melt function in the reshape package, it was variable.name not variable_name
+  d_melt <- rename(d_melt, c("variable"="col"))  # in case variable_name="col" didn't work before.
   d_melt$well <- paste(d_melt$row, d_melt$col, sep="")
   head(d_melt, 15)
   #d_melt <- subset(d_melt, select=-c(row, col))  # removes the columns named "row" and "col"
