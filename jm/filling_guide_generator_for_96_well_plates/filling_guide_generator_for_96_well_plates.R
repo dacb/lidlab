@@ -15,8 +15,15 @@ filling_guide_generator_for_96_well_plates <- function(df, cols, well.identifier
   # do the equivalent of lapply(cols, function(colname) {filling_guide_96_well_arranger_1_col(d2, colname)})
   # make a new dataframe label by rbinding together the column name, and the dcast output that converts columns into 96-well 8*12 format. 
   d2 <- lapply(cols, function(colname) {
-    loading_guide_label <- c(colname, "", "", "", "", "", "", "", "", "", "", "", "", "") # prepare a row that describes the numbers that will appear after it. 
-    loading_guide <- dcast(d, row~col, value.var = colname)  # converts a column of 96 wells into a 12-wide, 8 long dataframe
+    loading_guide_label <- paste("plate ", unique(d$plate), ", col = ", colname, sep="")
+    print("loading_guide_label")
+    print(loading_guide_label)
+    loading_guide_label <- c(loading_guide_label, "", "", "", "", "", "", "", "", "", "", "", "") # prepare a row that describes the numbers that will appear after it. 
+    #print(loading_guide_label)
+    loading_guide <- dcast(d, row~col, value.var = colname, fill="no_value")  # converts a column of 96 wells into a 12-wide, 8 long dataframe
+    #print("head(loading_guide):")
+    #print(head(loading_guide))
+    #return(loading_guide)
     return(rbind(loading_guide_label, loading_guide))  # this is what the function gives back.  It is ready to be saved as a CSV and colored in gDocs/excel. 
   })
   # do the equibalent of:  do.call(rbind, d2)
