@@ -4,8 +4,12 @@ filling_guide_generator_for_96_well_plates <- function(df, cols, well.identifier
   # first prepare the dataframe
   d <- df  #df is short for data.frame, d is short for data or df
   # make a column called row that lists the row in the 96-well plate.  
-  d$row <- str_extract(d[,well.identifier],"[[:upper:]]")  # uses the user-specified well-identifier to grab as in 11 from B11.
-  d$col <- str_extract(d[,well.identifier],"[[:digit:]]+") # uses the user-specified well-identifier to grab as in B from B11.
+  d$row <- str_extract(d[,well.identifier],"[[:upper:]]")  # uses the user-specified well-identifier to grab as in H from 3H5.
+#   print(d$row)
+  d$col <- str_extract(d[,well.identifier],"[[:digit:]]+$")  #grabs a column numbe (e.g. 5 in 3H5) if present 
+#   print(d$col)
+  d$plate <- str_extract(d[,well.identifier],"^[[:digit:]]+") #grabs a plate numbe (e.g. 3 in 3H5) if present # not currently used.  
+#   print(d$plate)
   # fix the factors for merging. 
   d$col <- factor(d$col, c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)) # setting order of factors to 1, 2, 3,...12 not 1 10 11 12, 2, 3, 4, ...
   # do the equivalent of lapply(cols, function(colname) {filling_guide_96_well_arranger_1_col(d2, colname)})
