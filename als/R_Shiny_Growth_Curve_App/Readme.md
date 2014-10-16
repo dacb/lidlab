@@ -1,4 +1,4 @@
-# PlotGrowthCurves R_Shiny App with samples growth curve data
+# PlotGrowthCurves R_Shiny App with sample growth curve data
 
 **Features**
 *Adjustable Axes
