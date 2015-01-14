@@ -2,7 +2,7 @@
 *Goal:Take superold file format from our ancient Shimadzu HPLC and do signal processing
 
 #Notes
-*Forrest Coleman wrote the read_dat.py file
+*Forrest Collman wrote the read_dat.py file
 *Peak detection from https://gist.github.com/1178136 is incorporated --> download that file separately
 
 **Features**
