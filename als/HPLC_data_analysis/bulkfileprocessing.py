@@ -10,6 +10,10 @@ import read_dat as rd
 import numpy as np
 import matplotlib.pyplot as plt
 import peakdetect
+import csv
+import datetime
+from matplotlib.backends.backend_pdf import PdfPages
+
 
 #HPLC file processing 
 
@@ -30,12 +34,15 @@ class sample_points:
     def simple_plot(self):
         print('Sample ' + self.name)
         plt.plot(self.time_points,self.data_points)
-        plt.show()
-        print(' ')
+        plt.title(self.name)
+        pdf.savefig()
+        plt.close()
         
     # Finds peaks using peak detect
-        def peak_detect(self):
-            print self.date
+    def peak_detect(self):
+        peakdetect._datacheck_peakdetect(self.time_points, self.data_points)
+        peaks = peakdetect.peakdetect(self.data_points, self.time_points)
+        return peaks
 
 #%% Gets a list of the .dat files in a specific folder
 data_dir = './Data/2015_01_10'
@@ -52,6 +59,28 @@ for x in file_list:
     info=filename.split('_')
     time,intensity = rd.process_datafile(x)
     sample_list.append(sample_points(info[2],x, info[0], info[1],time,intensity))
-    
 
 
+print len(sample_list)
+
+#Creates a files with all the peaks in each sample
+for i in range(len(sample_list)):
+    mins, maxes = sample_list[i].peak_detect()
+    print mins
+    print sample_list[i].name
+    print maxes
+    np.savetxt('peaks_' + sample_list[i].name + '.csv', maxes, delimiter=",")
+
+with PdfPages('multipage_pdf.pdf') as pdf:
+    for i in range(len(sample_list)):
+        sample_list[i].simple_plot()
+
+    # We can also set the file's metadata via the PdfPages object:
+    # http://matplotlib.org/examples/pylab_examples/multipage_pdf.html
+    d = pdf.infodict()
+    d['Title'] = 'Multipage PDF Example'
+    d['Author'] = u'Amanda Smith\xe4nen'
+    d['Subject'] = 'Created a multiple page file with figures'
+    d['Keywords'] = 'PdfPages multipage keywords author title subject'
+    d['CreationDate'] = datetime.datetime(2015, 01, 14)
+    d['ModDate'] = datetime.datetime.today()
