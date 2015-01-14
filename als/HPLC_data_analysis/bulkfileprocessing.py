@@ -60,17 +60,15 @@ for x in file_list:
     time,intensity = rd.process_datafile(x)
     sample_list.append(sample_points(info[2],x, info[0], info[1],time,intensity))
 
-
-print len(sample_list)
-
 #Creates a files with all the peaks in each sample
 for i in range(len(sample_list)):
-    mins, maxes = sample_list[i].peak_detect()
+    maxes, mins = sample_list[i].peak_detect()
     print mins
     print sample_list[i].name
     print maxes
     np.savetxt('peaks_' + sample_list[i].name + '.csv', maxes, delimiter=",")
 
+#Creates a pdf file with simple graphs for each of the samples
 with PdfPages('multipage_pdf.pdf') as pdf:
     for i in range(len(sample_list)):
         sample_list[i].simple_plot()
@@ -84,3 +82,5 @@ with PdfPages('multipage_pdf.pdf') as pdf:
     d['Keywords'] = 'PdfPages multipage keywords author title subject'
     d['CreationDate'] = datetime.datetime(2015, 01, 14)
     d['ModDate'] = datetime.datetime.today()
+
+#Makes a pandas dataframe out the files
