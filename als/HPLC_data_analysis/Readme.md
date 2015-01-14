@@ -1,9 +1,9 @@
 # HPLC data processing
-#Goal:Take superold file format from our ancient Shimadzu HPLC and do signal processing
+*Goal:Take superold file format from our ancient Shimadzu HPLC and do signal processing
 
 #Notes
-#Forrest Coleman wrote the read_dat.py file
-#Peak detection from https://gist.github.com/1178136 is incorporated --> download that file separately
+*Forrest Coleman wrote the read_dat.py file
+*Peak detection from https://gist.github.com/1178136 is incorporated --> download that file separately
 
 **Features**
 * Read .dat files into numpy arrays for all .dat files in a folder
@@ -21,4 +21,4 @@
 - pylab
 
 **Current Issues**
-* Performance is slow because in order to make the file input interactive, it reloads everything for small adjustments
+* Peak detection and integration is not yet implemented
