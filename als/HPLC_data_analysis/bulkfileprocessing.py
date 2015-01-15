@@ -13,7 +13,8 @@ import peakdetect
 import csv
 import datetime
 from matplotlib.backends.backend_pdf import PdfPages
-
+import pandas as pd
+from ggplot import *
 
 #HPLC file processing 
 
@@ -83,4 +84,21 @@ with PdfPages('multipage_pdf.pdf') as pdf:
     d['CreationDate'] = datetime.datetime(2015, 01, 14)
     d['ModDate'] = datetime.datetime.today()
 
+
 #Makes a pandas dataframe out the files
+for i in range(len(sample_list)):
+    if i==0:
+        df = pd.DataFrame({'Time[min]':sample_list[i].time_points, sample_list[i].name:sample_list[i].data_points})
+    else:
+        df2=pd.DataFrame({sample_list[i].name:sample_list[i].data_points})
+        df=df.join(df2)
+df.to_csv('try.csv', sep=',')
+#Plot traces with ggplot
+#melt data first
+mdf=pd.melt(df,id_vars=['Time[min]'],var_name='Sample', value_name='Intensity[mV]')
+#a = mdf[mdf.Sample =='1-5dil-org-acid-std.dat']
+mdf2= mdf[mdf.Sample =='org-acid-std.dat']
+print ggplot(mdf2, aes(x='Time[min]', y='Intensity[mV]', group ='Sample')) + geom_point() + geom_line()+facet_wrap("Sample")
+print ggplot(mdf, aes(x='Time[min]', y='Intensity[mV]', group ='Sample')) + geom_point() + geom_line()+facet_wrap("Sample")
+   
+        
