@@ -1,30 +1,27 @@
-This function rearranges column(s) of a data frame into the shape of 96-well blocks, and is intended to convert planning columns into a picture that you can use to load cultures, resin, etc. into 96-well plates.  It accepts well names like H11 (row H, column 11) or 3H11 (plate 3, row H, columns 11)i
+This function massages data exported from the computer program ???? that talks to the Molecular Devices (brand) SpectraMax 190 (model) plate reader machine.  It can import raw files including end-point, kinetic, and spectrum data types.
 
-This gDoc shows exactly what Janet designed it for, showing input and output
-[140601 filling_guide_generator_for_96_well_plates DEMO](https://docs.google.com/spreadsheets/d/1l60FNFIF2afnxNQVqEfH7sgYI51THDVVXns14lnkdhU/edit#gid=1109366614)
+It exports all of these scans to one data frame with one well scan per row.  Each wavelength or time a well is measured at gets its own row. The name entered for the scan on the plate reader is returned as a new column. 
 
-it requires:
-* a csv with some column that has labels spanning A1 to H12 (with the appropriate set of 96 included) or nA1 to nH12 for an nth plate number
-* a list of column names that you want reformatted into your guide
-
-It gives a data.frame you can save to a csv, then do conditional highlighting on in gSpreadsheets or excel.
-
-See the demo package for more detail.  
-
-Required packages:
-library(reshape2)  # for melt, cast
-library(RCurl) # necessary for getURL below
-library(stringr)  #used to get row and column names from well names: str_extract
-
-Arugments:
+Requirements:
+* Exported CSV from the ???? software: see example of CSV format [here](https://docs.google.com/spreadsheets/d/1ILyE9JzosQp_oiixHFNr2D6E2HL2Io8N0c4Hq1uk4_Y/edit#gid=0)
+  * Note: the software does have two settings for export; make sure it looks somewhat like the link above, and see description of difference [here](http://openwetware.org/wiki/Lidstrom:_Molecular_Devices_Plate_Reader#Exporting_Data) 
+* The melt function of the reshape2 package.
+  * To install: install.packages("reshape2")
+  * To load for each R session: library(reshape2)
 
 Argument  | Requirements/Description
 ------------- | -------------
-df | The name of the data.frame that contains your columnar plate info.  Each well should be represented by one row, so there should be 96 rows. 
-cols  | A list of the column names, as strings.  Example: c("uL.resin", "mL.culture")
-well.identifier  |  The name of the column that contains the well label of the format A1, B6, C12. 
+filename | The name of the CSV file that contains the raw output
+path  |  The path to the folder in which the CSV lives
 
-Warnings:
-* It will break if you give it a column name that doesn't exist
-  * Error 140625: Error in structure(ordered, dim = ns) : 
-  dims [product 96] do not match the length of object [0] 
+For example, if you have a file named data.csv, and it lives in the folder ./raw_data you would pass filename = "data.csv",  path = "./raw_data"
+Don't enter path with the trailing slash like "./raw_data/" or an error will result. 
+
+Limitations:
+* In kinetic mode, the time intervals of reads must be consistent.  With our software, this is the only possibility.  
+
+See the demo package for more detail.  
+
+Required packages for demo:
+library(reshape2)  # for the melt function used in the function
+library(RCurl) # necesary to run getURL in the demo package
