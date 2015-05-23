@@ -4,7 +4,7 @@ fun_import_raw_spectra <- function(filename, path) {
         # See: https://docs.google.com/spreadsheets/d/1XMQXqH1nv7I3iTECpaY-j_JbLKNK9JIwRpfaAqC2y5s/edit?usp=sharing for sample data
         #
         # Requires:
-        #   melt (reshape2 package)
+        #   melt (function in reshape2 package)
         #       install by: install.packages("reshape2")
         #       load for each R session: library(reshape2)
         #
@@ -13,7 +13,7 @@ fun_import_raw_spectra <- function(filename, path) {
         #   path: the path to the folder containing the file specified by filename.  e.g. "./raw_data"  (note not "./raw_data/")
         #
         # Returns:
-        #   One well scan per row.  One row per time or wavelength as it varies.
+        #   One well scan per row.  One row per time or wavelength as it varies.  Each row contains the name typed in describing each scan. 
         filename_import <- paste0(path, "/", filename)
         df.raw <- read.csv(file=filename_import, skip = 0, fill=T, stringsAsFactors = F) #imports the first row as column names
         # make a data.frame that tells you the row numbers for the start & stop of each chunk
